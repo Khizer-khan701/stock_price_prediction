@@ -6,6 +6,7 @@ import os
 import sys
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
+from src.components.data_transformation import DataTransformation,DataTransformationConfig
 
 @dataclass
 class DataIngestionConfig():
@@ -19,8 +20,8 @@ class DataIngestion:
 
     def initiate_data_ingestion(self):
         try:
-            df=pd.read_csv("C:/Users/PMYLS/Desktop/My Data/stock price/stock_data.csv")
-            os.makedirs(os.path.dirname(self.data_ingestion_config.train_data_path))
+            df=pd.read_csv("C:/Users/PMYLS/Desktop/My Data/car_price/used_cars.csv")
+            os.makedirs(os.path.dirname(self.data_ingestion_config.train_data_path),exist_ok=True)
             df.to_csv(self.data_ingestion_config.raw_data_path,index=False,header=True)
             train_df,test_df=train_test_split(df,test_size=0.2,random_state=42)
             train_df.to_csv(self.data_ingestion_config.train_data_path,index=False,header=True)
@@ -36,6 +37,9 @@ class DataIngestion:
 if __name__=="__main__":
     try:
         data_ingestion=DataIngestion()
-        data_ingestion.initiate_data_ingestion()
+        train_set,test_set=data_ingestion.initiate_data_ingestion()
+
+        data_transformation=DataTransformation()
+        data_transformation.initiate_data_transformation(train_set,test_set)
     except Exception as e:
         raise CustomException(e,sys)
